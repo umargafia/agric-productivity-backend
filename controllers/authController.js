@@ -41,7 +41,7 @@ const createSendToken = (user, statusCode, res) => {
 
 exports.signup = catchAsync(async (req, res, next) => {
   // Extract signup data from request body
-  const { name, email, password, passwordConfirm } = req.body;
+  const { name, email, password } = req.body;
 
   // Check if email already exists
   const existingUser = await User.findOne({ email });
@@ -65,19 +65,12 @@ exports.signup = catchAsync(async (req, res, next) => {
       new AppError('Password must be at least 8 characters long', 400)
     );
   }
-  if (!passwordConfirm) {
-    return next(new AppError('Password confirmation is required', 400));
-  } else if (password !== passwordConfirm) {
-    return next(
-      new AppError('Password confirmation does not match password', 400)
-    );
-  }
 
   const newUser = await User.create({
     name: req.body.name,
     email: req.body.email,
     password: req.body.password,
-    passwordConfirm: req.body.passwordConfirm
+    passwordConfirm: req.body.password
   });
 
   createSendToken(newUser, 201, res);
